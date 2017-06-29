@@ -1,9 +1,9 @@
-# Grand Frere
-
 ## Introduction
 ---
 
 This app is designed to keep track of items to do weekly. User can enter tasks by categories that are to be done every week, along with number of hours to put in for every week. The goal is for the app to design a daily timetable that can be followed.
+
+**Disclaimer:** This app has been designed to get hands on experience with React and Firebase.
 
 ## Technologies
 ---
