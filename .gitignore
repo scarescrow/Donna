@@ -9,8 +9,9 @@
 # production
 /build
 
-#config
+#firebase-config
 /src/firebase-config.js
+.firebaserc
 
 # misc
 .DS_Store
