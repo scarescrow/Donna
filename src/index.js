@@ -305,8 +305,85 @@ function TaskHandler(props) {
 	)
 }
 
-class TaskDetailHandler extends React.Component {
+class TaskDetailUpdater extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			categories: []
+		}
+		this.handleChange = this.handleChange.bind(this)
+	}
 
+	componentDidMount() {
+		getCategories((fbCategories) => {
+			this.setState({
+				categories: fbCategories,
+			})
+		});
+	}
+
+	handleChange(event) {
+		console.log(event);
+		this.setState({desc: event.target.value});
+	}
+
+	updateTask() {
+		var task = this.props.task;
+		var category = document.getElementById('categoryDropdownTaskUpdate').value;
+		var desc = document.getElementById('taskDescriptionTaskUpdate').value.split(';');
+		this.setState({desc: desc})
+		if(task === "" || category === "")
+			return;
+		var task_item = {}
+		task_item[task] = {
+			"category": category,
+			"description": desc
+		}
+		database.ref('/tasks').update(task_item).then(() => {
+			
+		}).catch((error) => {
+			console.log("There was an error while updating tasks in Firebase: " + error);
+		});
+	}
+
+	_handleKeyPress(e) {
+		if(e.key === 'Enter') {
+			this.updateTask();
+		}
+	}
+
+	render() {
+		var categoryTags = [];
+		this.state.categories.forEach((item, i) => {
+			if (item === this.props.category)
+				categoryTags.push(<option key={i} value={item} selected>{item}</option>)
+			else
+				categoryTags.push(<option key={i} value={item}>{item}</option>)
+		});
+		//TODO: Fix textarea
+		var desc = this.props.desc.join(';').slice(0);
+		return (
+			<div className="updateTaskDetails">
+				<h2>Update Task</h2>
+				<div>
+					<select id="categoryDropdownTaskUpdate" defaultValue={this.state.category}>
+						{categoryTags}
+					</select>
+				</div>
+				<div>
+					<textarea id="taskDescriptionTaskUpdate"
+						 value={desc}
+						 onKeyPress={(e) => this._handleKeyPress(e)}></textarea>
+				</div>
+				<div>
+					<button type="button" onClick={() => this.updateTask()}>Update</button>
+				</div>
+			</div>
+		);
+	}
+}
+
+class TaskDetailHandler extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -337,6 +414,11 @@ class TaskDetailHandler extends React.Component {
 				<div>Category: {this.state.category}</div>
 				<h4>Details:</h4>
 				<div>{descTags}</div>
+				<TaskDetailUpdater 
+					category={this.state.category}
+					desc={this.state.desc}
+					task={this.state.task}>
+				</TaskDetailUpdater>
 			</div>
 		);
 	}
